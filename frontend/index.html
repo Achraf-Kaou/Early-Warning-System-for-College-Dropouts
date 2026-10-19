@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ML Model Interface</title>
+  <!-- Tailwind CSS for instant clean styling -->
+</head>
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-6">
+
+  <div class="bg-white p-8 rounded-2xl shadow-md w-full max-w-lg border border-slate-100">
+    <!-- Header -->
+    <header class="text-center mb-8">
+      <h1 class="text-2xl font-bold text-slate-800">Machine Learning Model Portal</h1>
+      <p class="text-slate-500 text-sm mt-1">Upload data inputs below to generate a model prediction.</p>
+    </header>
+
+    <!-- ML Input Form -->
+    <form id="prediction-form" class="space-y-6">
+      
+      <!-- Option A: File Input (Uncomment if your ML model processes images/audio) -->
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-2">Upload File Input (Image/Data)</label>
+        <input type="file" id="ml-file" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer border border-slate-200 rounded-lg p-1" />
+      </div>
+
+      <!-- Option B: Text Input (Uncomment if your ML model processes NLP/tabular strings) -->
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-2">Text Prompt / Feature Input</label>
+        <textarea id="ml-text" rows="3" class="w-full p-3 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Enter text features or payload here..."></textarea>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors cursor-pointer text-sm shadow-sm">
+        Run Inference
+      </button>
+    </form>
+
+    <!-- ML Output / Response UI Container -->
+    <div id="results-container" class="mt-8 pt-6 border-t border-slate-100 hidden">
+      <h3 class="text-sm font-semibold text-slate-700 mb-2">Model Outputs</h3>
+      
+      <!-- Loading Placeholder -->
+      <div id="loading-state" class="text-slate-400 text-sm italic hidden animate-pulse">
+        Processing tensors and running inference...
+      </div>
+
+      <!-- Actual Prediction Results Card -->
+      <div id="output-box" class="bg-slate-900 rounded-lg p-4 font-mono text-xs text-emerald-400 overflow-x-auto shadow-inner">
+        <pre id="json-output">{}</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Frontend Wireframe Logic -->
+  <script>
+    document.getElementById('prediction-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const resultsContainer = document.getElementById('results-container');
+      const loadingState = document.getElementById('loading-state');
+      const jsonOutput = document.getElementById('json-output');
+
+      // Reveal the layout containers
+      resultsContainer.classList.remove('hidden');
+      loadingState.classList.remove('hidden');
+      jsonOutput.parentElement.classList.add('hidden');
+
+      // Mocking the backend API network request latency
+      setTimeout(() => {
+        loadingState.classList.add('hidden');
+        jsonOutput.parentElement.classList.remove('hidden');
+
+        // This structured object simulates what a Python API wrapper return
+        const mockApiResponse = {
+          "status": "success",
+          "prediction": "Class_A",
+          "confidence_score": 0.9482,
+          "inference_time_ms": 42.1,
+          "raw_tensor_outputs": [0.9482, 0.0311, 0.0207]
+        };
+
+        // Render response inside the visual box
+        jsonOutput.textContent = JSON.stringify(mockApiResponse, null, 2);
+      }, 1000);
+    });
+  </script>
+</body>
+</html>
