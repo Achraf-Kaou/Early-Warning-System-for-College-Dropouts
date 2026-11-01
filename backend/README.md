@@ -22,7 +22,7 @@ uv run fastapi deploy
 
 ## Project Structure
 
-- `main.py` - Your FastAPI application
+- `app/main.py` - Your FastAPI application
 - `pyproject.toml` - Project dependencies
 
 ## Learn More
