@@ -1,89 +1,205 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ML Model Interface</title>
-  <!-- Tailwind CSS for instant clean styling -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alerte précoce – Décrochage universitaire</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body class="bg-slate-50 min-h-screen flex items-center justify-center p-6">
+<body>
+  <header class="header">
+    <div class="container">
+      <h1>🎓 Alerte précoce du décrochage universitaire</h1>
+      <p class="subtitle">Estimez le niveau de risque d'un étudiant à partir de ses données académiques et administratives</p>
+    </div>
+  </header>
 
-  <div class="bg-white p-8 rounded-2xl shadow-md w-full max-w-lg border border-slate-100">
-    <!-- Header -->
-    <header class="text-center mb-8">
-      <h1 class="text-2xl font-bold text-slate-800">Machine Learning Model Portal</h1>
-      <p class="text-slate-500 text-sm mt-1">Upload data inputs below to generate a model prediction.</p>
-    </header>
-
-    <!-- ML Input Form -->
-    <form id="prediction-form" class="space-y-6">
-      
-      <!-- Option A: File Input (Uncomment if your ML model processes images/audio) -->
-      <div>
-        <label class="block text-sm font-semibold text-slate-700 mb-2">Upload File Input (Image/Data)</label>
-        <input type="file" id="ml-file" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer border border-slate-200 rounded-lg p-1" />
+  <main class="container">
+    <!-- Statut API -->
+    <section class="card api-status" id="apiStatus">
+      <div class="status-row">
+        <span id="statusDot" class="dot unknown"></span>
+        <span id="statusText">Vérification de l'API…</span>
+        <button type="button" id="btnCheckApi" class="btn btn-outline btn-sm">Revérifier</button>
       </div>
+    </section>
 
-      <!-- Option B: Text Input (Uncomment if your ML model processes NLP/tabular strings) -->
-      <div>
-        <label class="block text-sm font-semibold text-slate-700 mb-2">Text Prompt / Feature Input</label>
-        <textarea id="ml-text" rows="3" class="w-full p-3 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Enter text features or payload here..."></textarea>
+    <form id="studentForm">
+      <!-- Infos générales -->
+      <section class="card">
+        <h2>1. Informations générales</h2>
+        <div class="grid-3">
+          <label>Âge à l'inscription
+            <input type="number" name="age_at_enrollment" min="15" max="80" value="20" required />
+          </label>
+          <label>Genre
+            <select name="gender">
+              <option value="0">Femme</option>
+              <option value="1" selected>Homme</option>
+            </select>
+          </label>
+          <label>Statut marital (code)
+            <input type="number" name="marital_status" min="1" value="1" required />
+          </label>
+          <label>Mode de candidature (code)
+            <input type="number" name="application_mode" min="1" value="17" required />
+          </label>
+          <label>Ordre de candidature
+            <input type="number" name="application_order" min="0" max="9" value="1" required />
+          </label>
+          <label>Filière / Course (code)
+            <input type="number" name="course" min="1" value="9254" required />
+          </label>
+          <label>Cours de jour / soir
+            <select name="daytime_evening_attendance">
+              <option value="1" selected>Jour</option>
+              <option value="0">Soir</option>
+            </select>
+          </label>
+          <label>Qualification antérieure (code)
+            <input type="number" name="previous_qualification" min="1" value="1" required />
+          </label>
+          <label>Note qualification antérieure
+            <input type="number" name="previous_qualification_grade" step="0.1" value="130" required />
+          </label>
+          <label>Note d'admission
+            <input type="number" name="admission_grade" step="0.1" value="125" required />
+          </label>
+        </div>
+      </section>
+
+      <!-- Situation -->
+      <section class="card">
+        <h2>2. Situation de l'étudiant</h2>
+        <div class="grid-3">
+          <label>Étudiant déplacé
+            <select name="displaced">
+              <option value="0" selected>Non</option>
+              <option value="1">Oui</option>
+            </select>
+          </label>
+          <label>Débiteur
+            <select name="debtor">
+              <option value="0" selected>Non</option>
+              <option value="1">Oui</option>
+            </select>
+          </label>
+          <label>Frais de scolarité à jour
+            <select name="tuition_fees_up_to_date">
+              <option value="1" selected>Oui</option>
+              <option value="0">Non</option>
+            </select>
+          </label>
+          <label>Bénéficiaire d'une bourse
+            <select name="scholarship_holder">
+              <option value="0" selected>Non</option>
+              <option value="1">Oui</option>
+            </select>
+          </label>
+          <label>Qualification de la mère (code)
+            <input type="number" name="mother_qualification" min="1" value="19" required />
+          </label>
+          <label>Qualification du père (code)
+            <input type="number" name="father_qualification" min="1" value="12" required />
+          </label>
+          <label>Profession de la mère (code)
+            <input type="number" name="mother_occupation" min="0" value="5" required />
+          </label>
+          <label>Profession du père (code)
+            <input type="number" name="father_occupation" min="0" value="9" required />
+          </label>
+        </div>
+      </section>
+
+      <!-- Performance académique -->
+      <section class="card">
+        <h2>3. Performance académique</h2>
+        <div class="grid-2">
+          <div>
+            <h3>1<sup>er</sup> semestre</h3>
+            <div class="grid-2">
+              <label>Unités inscrites
+                <input type="number" name="cu_1st_enrolled" min="0" value="6" />
+              </label>
+              <label>Unités validées
+                <input type="number" name="cu_1st_approved" min="0" value="6" />
+              </label>
+              <label>Note moyenne
+                <input type="number" name="cu_1st_grade" min="0" step="0.1" value="13.5" />
+              </label>
+              <label>Évaluations
+                <input type="number" name="cu_1st_evaluations" min="0" value="6" />
+              </label>
+              <label>Unités créditées
+                <input type="number" name="cu_1st_credited" min="0" value="0" />
+              </label>
+              <label>Sans évaluation
+                <input type="number" name="cu_1st_without_evaluations" min="0" value="0" />
+              </label>
+            </div>
+          </div>
+          <div>
+            <h3>2<sup>e</sup> semestre</h3>
+            <div class="grid-2">
+              <label>Unités inscrites
+                <input type="number" name="cu_2nd_enrolled" min="0" value="6" />
+              </label>
+              <label>Unités validées
+                <input type="number" name="cu_2nd_approved" min="0" value="5" />
+              </label>
+              <label>Note moyenne
+                <input type="number" name="cu_2nd_grade" min="0" step="0.1" value="12.8" />
+              </label>
+              <label>Évaluations
+                <input type="number" name="cu_2nd_evaluations" min="0" value="6" />
+              </label>
+              <label>Unités créditées
+                <input type="number" name="cu_2nd_credited" min="0" value="0" />
+              </label>
+              <label>Sans évaluation
+                <input type="number" name="cu_2nd_without_evaluations" min="0" value="0" />
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="actions">
+        <button type="submit" class="btn btn-primary" id="btnPredict">
+          Estimer le risque de décrochage
+        </button>
       </div>
-
-      <!-- Submit Button -->
-      <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors cursor-pointer text-sm shadow-sm">
-        Run Inference
-      </button>
     </form>
 
-    <!-- ML Output / Response UI Container -->
-    <div id="results-container" class="mt-8 pt-6 border-t border-slate-100 hidden">
-      <h3 class="text-sm font-semibold text-slate-700 mb-2">Model Outputs</h3>
-      
-      <!-- Loading Placeholder -->
-      <div id="loading-state" class="text-slate-400 text-sm italic hidden animate-pulse">
-        Processing tensors and running inference...
+    <!-- Résultat -->
+    <section class="card result hidden" id="resultCard">
+      <h2>Résultat de l'analyse</h2>
+      <div id="resultBadge" class="result-badge"></div>
+      <div class="progress-wrap">
+        <div id="progressBar" class="progress-bar"></div>
       </div>
+      <p id="resultMessage" class="result-message"></p>
+      <details>
+        <summary>Détails techniques</summary>
+        <pre id="resultJson"></pre>
+      </details>
+    </section>
 
-      <!-- Actual Prediction Results Card -->
-      <div id="output-box" class="bg-slate-900 rounded-lg p-4 font-mono text-xs text-emerald-400 overflow-x-auto shadow-inner">
-        <pre id="json-output">{}</pre>
-      </div>
+    <section class="card error hidden" id="errorCard">
+      <h2>Erreur</h2>
+      <p id="errorText"></p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>
+        Projet académique – Alerte précoce du décrochage universitaire.
+        Les prédictions sont <strong>indicatives</strong> et ne remplacent pas le jugement pédagogique.
+      </p>
     </div>
-  </div>
+  </footer>
 
-  <!-- Frontend Wireframe Logic -->
-  <script>
-    document.getElementById('prediction-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const resultsContainer = document.getElementById('results-container');
-      const loadingState = document.getElementById('loading-state');
-      const jsonOutput = document.getElementById('json-output');
-
-      // Reveal the layout containers
-      resultsContainer.classList.remove('hidden');
-      loadingState.classList.remove('hidden');
-      jsonOutput.parentElement.classList.add('hidden');
-
-      // Mocking the backend API network request latency
-      setTimeout(() => {
-        loadingState.classList.add('hidden');
-        jsonOutput.parentElement.classList.remove('hidden');
-
-        // This structured object simulates what a Python API wrapper return
-        const mockApiResponse = {
-          "status": "success",
-          "prediction": "Class_A",
-          "confidence_score": 0.9482,
-          "inference_time_ms": 42.1,
-          "raw_tensor_outputs": [0.9482, 0.0311, 0.0207]
-        };
-
-        // Render response inside the visual box
-        jsonOutput.textContent = JSON.stringify(mockApiResponse, null, 2);
-      }, 1000);
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
